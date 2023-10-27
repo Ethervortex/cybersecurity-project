@@ -16,7 +16,7 @@
         <nav>
             <ul>
                 {% block link %}
-                <li><a href="/">Etusivu</a></li>
+                <li><a href="{% url 'opeapp:home' %}">Etusivu</a></li>
                 <li><a href="/students">Oppilaat</a></li>
                 <li><a href="/courses">Kurssit</a></li>
                 <li><a href="/grades">Arvosanat</a></li>
@@ -26,6 +26,17 @@
         </nav>
     </div>
     {% endif %}
+    <div id="messages">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="flash-message {% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
     {% block content %}{% endblock %}
 </body>
 </html>
