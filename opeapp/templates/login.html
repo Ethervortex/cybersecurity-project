@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Kirjaudu sisään{% endblock %}
+{% block content %}
+    <br>
+    <h2>Kirjaudu sisään</h2>
+    <div class="box">
+        <form action="{% url 'opeapp:login' %}" method="POST">
+            {% csrf_token %}
+            <div class="t-field">
+                <input type="text" required name="username">
+                <span></span>
+                <label>Käyttäjätunnus</label>
+            </div>
+            <div class="t-field">
+                <input type="password" required name="password">
+                <span></span>
+                <label>Salasana</label>
+            </div>
+            <input class="login-input" type="submit" value="Kirjaudu">
+            <div class="signup">
+                Ei tunnusta? <a href="{% url 'opeapp:signup' %}">Rekisteröidy tästä</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

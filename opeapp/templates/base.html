@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpeApu - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+</head>
+<body>
+    <header class="header">
+        <h1>OpeApu</h1>
+    </header>
+    {% if user.is_authenticated %}
+    <div>
+        <nav>
+            <ul>
+                {% block link %}
+                <li><a href="/">Etusivu</a></li>
+                <li><a href="/students">Oppilaat</a></li>
+                <li><a href="/courses">Kurssit</a></li>
+                <li><a href="/grades">Arvosanat</a></li>
+                <li><a href="{% url 'opeapp:logout' %}">Kirjaudu ulos</a></li>
+                {% endblock %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+</body>
+</html>

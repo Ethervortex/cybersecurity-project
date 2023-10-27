@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Rekisteröityminen{% endblock %}
+{% block content %}
+    <br>
+    <h2>Rekisteröityminen</h2>
+    <div class="box">
+        <form action="{% url 'opeapp:signup' %}" method="POST">
+            {% csrf_token %}
+            <div class="t-field">
+                <input type="text" required name="username" minlength="3" maxlength="30">
+                <span></span>
+                <label>Anna käyttäjätunnus</label>
+            </div>
+            <div class="t-field">
+                <input type="password" required name="password1" minlength="3" maxlength="30">
+                <span></span>
+                <label>Anna salasana</label>
+            </div>
+            <div class="t-field">
+                <input type="password" required name="password2" minlength="3" maxlength="30">
+                <span></span>
+                <label>Anna salasana uudelleen</label>
+            </div>
+                
+            <input class="login-input" type="submit" value="Tallenna">
+            <div class="signup">
+                <a href="{% url 'opeapp:login' %}">Palaa kirjautumissivulle</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

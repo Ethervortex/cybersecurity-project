@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Etusivu{% endblock %}
+{% block link %}
+    {% if session.username %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    {% if session.username %}
+        <h2>Etusivu</h2>
+        <p>
+            <em>Oppilaat</em>-välilehdellä voi lisätä uusia oppilaita tietokantaan ja lisäksi annetaan 
+            kaikki tietokantaan luodut oppilaat listana. Listasta pääsee myös yksittäisen oppilaan 
+            kurssiarvosanatietoihin käsiksi. 
+        </p><p> 
+            <em>Kurssit</em>-välilehdellä voi luoda uusia kursseja ja 
+            kaikki luodut kurssit annetaan listana. Luotuun kurssiin voi lisätä kurssille 
+            osallistuvat oppilaat. Kurssin voi myös poistaa, jos sille ei osallistu yhtään oppilasta.
+        </p><p>
+            <em>Arvosanat</em>-välilehdellä voi antaa kurssin oppilaille kurssiarvosanan.
+        </p>
+    {% else %}
+        <br>
+        <h2>Kirjaudu sisään</h2>
+        <div class="box">
+            <form action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
+                <div class="t-field">
+                    <input type="text" required name="username">
+                    <span></span>
+                    <label>Käyttäjätunnus</label>
+                </div>
+                <div class="t-field">
+                    <input type="password" required name="password">
+                    <span></span>
+                    <label>Salasana</label>
+                </div>
+                <input class="login-input" type="submit" value="Kirjaudu">
+                <div class="signup">
+                    Ei tunnusta? <a href="/signup">Rekisteröidy tästä</a>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}
