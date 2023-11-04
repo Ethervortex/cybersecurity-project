@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Oppilas{% endblock %}
+{% block link %}
+    {% if user.is_authenticated %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <h2>{{ student_name }}</h2>
+
+    <h3>Oppilaan kurssit:</h3>
+    {% for course, data in course_students.items() %}
+        <h4>{{ course }}:</h4>
+        <b>Kurssin arvosana: </b>{{ data.grade }}
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Oppilaat{% endblock %}
+{% block link %}
+    {% if user.is_authenticated %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <h2>Oppilaat</h2>
+
+    <div class="button-container">
+        <button class="button-style" id="new-student-button">Lisää oppilas</button>
+    </div>
+
+    <div id="new-student-form" style="display: none;">
+        <form action="{% url 'opeapp:students' %}" method="POST">
+            {% csrf_token %}
+            <label for="student-name">Nimi:</label>
+            <input type="text" id="student-name" name="student_name" required minlength="3" maxlength="25">
+            <button class="button-style" type="submit" name="action" value="add_student">Tallenna</button>
+            <button class="button-style" type="button" id="cancel-button">Peruuta</button>
+        </form>
+    </div>
+    <br>
+    <table class="student-table">
+        <tbody>
+            {% for student in students %}
+                <tr>
+                    <td><span class="student-name">{{ student.name }}</span></td>
+                    {#<td><a href="{% url 'opeapp:student_details' student.id %}"><button class="button-style">Oppilaan tiedot</button></a></td>#}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        // JavaScript to show/hide the new student form
+        document.getElementById("new-student-button").addEventListener("click", () => {
+            document.getElementById("new-student-form").style.display = "block";
+        });
+
+        document.getElementById("cancel-button").addEventListener("click", () => {
+            document.getElementById("new-student-form").style.display = "none";
+        });
+    </script>
+{% endblock %}

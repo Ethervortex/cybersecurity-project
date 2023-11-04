@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from .models import Student
 
 @login_required
 def home_view(request):
@@ -52,3 +53,29 @@ def signup_view(request):
 def logout_view(request):
     logout(request)
     return render(request, 'login.html')
+
+def students_view(request):
+    if request.method == "POST":
+        student_name = request.POST.get('student_name')
+        creator_id = request.user.id
+        print('Student name: ', student_name, ' creator id: ', creator_id)
+        existing_student = Student.objects.filter(name=student_name, creator=creator_id).exists()
+
+        if existing_student:
+            messages.error(request, "A student with this name already exists.")
+        else:
+            creator = User.objects.get(pk=request.user.pk)
+            new_student = Student.objects.create(name=student_name, creator=creator) # Tässä jokin ongelma
+            print('new student: ', new_student)
+            new_student.save()
+            messages.success(request, f"{student_name} added successfully.")
+
+    # Fetch all students associated with the current user
+    creator_id = request.user.id
+    students = Student.objects.filter(creator=creator_id)
+
+    context = {
+        'students': students
+    }
+    print('Creator_id: ', creator_id)
+    return render(request, 'students.html', context)
