@@ -199,3 +199,23 @@ def grades_view(request):
         'students_courses': students_courses,
     }
     return render(request, 'grades.html', context)
+
+@login_required
+def student_details(request, student_id):
+    student = Student.objects.get(pk=student_id)
+
+    course_students = CourseStudent.objects.filter(student=student)
+    student_courses = {}
+
+    for course_student in course_students:
+        course_name = course_student.course.name
+        grade = course_student.grade
+
+        student_courses[course_name] = {'grade': grade}
+
+    context = {
+        'student_name': student.name,
+        'course_students': student_courses
+    }
+
+    return render(request, 'student.html', context)

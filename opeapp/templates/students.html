@@ -27,7 +27,7 @@
             {% for student in students %}
                 <tr>
                     <td><span class="student-name">{{ student.name }}</span></td>
-                    {#<td><a href="{% url 'opeapp:student_details' student.id %}"><button class="button-style">Oppilaan tiedot</button></a></td>#}
+                    <td><a href="{% url 'opeapp:student_details' student.id %}"><button class="button-style">Oppilaan tiedot</button></a></td>
                 </tr>
             {% endfor %}
         </tbody>

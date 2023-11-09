@@ -10,8 +10,7 @@
     <h2>{{ student_name }}</h2>
 
     <h3>Oppilaan kurssit:</h3>
-    {% for course, data in course_students.items() %}
-        <h4>{{ course }}:</h4>
-        <b>Kurssin arvosana: </b>{{ data.grade }}
+    {% for course, data in course_students.items %}
+        <h4>{{ course }}, arvosana: {{ data.grade }}</h4>
     {% endfor %}
 {% endblock %}
