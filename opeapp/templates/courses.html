@@ -27,7 +27,7 @@
             {% for course in courses %}
                 <tr>
                     <td><span class="course-name">{{ course.name }}</span></td>
-                    {#<td><a href="{{ url_for('course_students', course_id=course.id) }}"><button class="button-style">Näytä tiedot</button></a></td>#}
+                    <td><a href="{% url 'opeapp:add_course_students' course.id %}"><button class="button-style">Näytä tiedot</button></a></td>
                 </tr>
             {% endfor %}
         </tbody>

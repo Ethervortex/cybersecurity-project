@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from .models import Student, Course
+from .models import Student, Course, CourseStudent
 from django.contrib.auth import get_user_model
 
 @login_required
@@ -106,3 +106,34 @@ def courses_view(request):
     }
     print('Creator_id: ', creator_id)
     return render(request, 'courses.html', context)
+
+@login_required
+def add_course_students(request, course_id):
+    if request.method == 'POST':
+        student_ids = request.POST.getlist('student_ids')
+        course = Course.objects.get(pk=course_id)
+
+        CourseStudent.objects.filter(course=course).delete()
+        print('Student_ids: ', student_ids)
+        for student_id in student_ids:
+            student = Student.objects.get(pk=student_id)
+            print('Student: ', student)
+            CourseStudent.objects.create(course=course, student=student)
+
+        messages.success(request, "Course students updated successfully.")
+        courses = Course.objects.filter(creator=request.user.id)
+        return render(request, 'courses.html', {'courses': courses})
+
+    course = Course.objects.get(pk=course_id)
+    students = Student.objects.all()
+    course_students = CourseStudent.objects.filter(course=course)
+    associated_student_ids = [cs.student.id for cs in course_students]
+    print('Associated student ids: ', associated_student_ids, course_students, course)
+    context = {
+        'course_name': course.name,
+        'course_id': course.id,
+        'students': students,
+        'associated_student_ids': associated_student_ids,
+    }
+
+    return render(request, 'course.html', context)
