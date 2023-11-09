@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Kurssit{% endblock %}
+{% block link %}
+    {% if user.is_authenticated %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <h2>Kurssit</h2>
+
+    <div class="button-container">
+        <button class="button-style" id="new-course-button">Lisää kurssi</button>
+    </div>
+
+    <div id="new-course-form" style="display: none;">
+        <form action="{% url 'opeapp:courses' %}" method="POST">
+            {% csrf_token %}
+            <label for="course-name">Kurssin nimi:</label>
+            <input type="text" id="course-name" name="course_name" required minlength="3" maxlength="20">
+            <button class="button-style" type="submit" name="action" value="add_course">Tallenna</button>
+            <button class="button-style" type="button" id="cancel-button">Peruuta</button>
+        </form>
+    </div>
+    <br>
+    <table class="student-table">
+        <tbody>
+            {% for course in courses %}
+                <tr>
+                    <td><span class="course-name">{{ course.name }}</span></td>
+                    {#<td><a href="{{ url_for('course_students', course_id=course.id) }}"><button class="button-style">Näytä tiedot</button></a></td>#}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        // JavaScript to show/hide the new course form
+        document.getElementById("new-course-button").addEventListener("click", () => {
+            document.getElementById("new-course-form").style.display = "block";
+        });
+
+        document.getElementById("cancel-button").addEventListener("click", () => {
+            document.getElementById("new-course-form").style.display = "none";
+        });
+    </script>
+{% endblock %}

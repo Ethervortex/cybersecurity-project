@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from .models import Student
+from .models import Student, Course
 from django.contrib.auth import get_user_model
 
 @login_required
@@ -79,3 +79,30 @@ def students_view(request):
     }
     print('Creator_id: ', creator_id)
     return render(request, 'students.html', context)
+
+@login_required
+def courses_view(request):
+    if request.method == "POST":
+        course_name = request.POST.get('course_name')
+        creator_id = request.user.id
+        print('Course name: ', course_name, ' creator id: ', creator_id)
+        existing_course = Course.objects.filter(name=course_name, creator=creator_id).exists()
+
+        if existing_course:
+            messages.error(request, "A course with this name already exists.")
+        else:
+            creator = request.user
+            new_course = Course(name=course_name, creator=creator)
+            print('new course: ', new_course)
+            new_course.save()
+            messages.success(request, f"{course_name} added successfully.")
+
+    # Fetch all students associated with the current user
+    creator_id = request.user.id
+    courses = Course.objects.filter(creator=creator_id)
+
+    context = {
+        'courses': courses
+    }
+    print('Creator_id: ', creator_id)
+    return render(request, 'courses.html', context)

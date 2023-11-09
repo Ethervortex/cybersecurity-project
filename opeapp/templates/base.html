@@ -18,7 +18,7 @@
                 {% block link %}
                 <li><a href="{% url 'opeapp:home' %}">Etusivu</a></li>
                 <li><a href="{% url 'opeapp:students' %}">Oppilaat</a></li>
-                <li><a href="/courses">Kurssit</a></li>
+                <li><a href="{% url 'opeapp:courses' %}">Kurssit</a></li>
                 <li><a href="/grades">Arvosanat</a></li>
                 <li><a href="{% url 'opeapp:logout' %}">Kirjaudu ulos</a></li>
                 {% endblock %}
