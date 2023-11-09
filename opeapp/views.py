@@ -137,3 +137,65 @@ def add_course_students(request, course_id):
     }
 
     return render(request, 'course.html', context)
+
+@login_required
+def grades_view(request):
+    if request.method == 'POST':
+        for key in request.POST:
+            if key.startswith('grade-'):
+                _, student_id, course_id = key.split('-')
+                grade = request.POST[key]
+
+                course_student = CourseStudent.objects.get(
+                    course_id=int(course_id),
+                    student_id=int(student_id)
+                )
+                course_student.grade = int(grade)
+                course_student.save()
+        messages.success(request, "Grades updated successfully.")
+
+        # After updating grades, re-fetch the data and render the template
+        courses = Course.objects.filter(creator=request.user)
+        students_courses = {}
+
+        for course in courses:
+            associated_students = CourseStudent.objects.filter(course=course)
+            student_data = []
+            for student in associated_students:
+                student_data.append({
+                    'student_id': student.student.id,
+                    'student_name': student.student.name,
+                    'course_id': student.course.id,
+                    'grade': student.grade,
+                })
+
+            students_courses[course.name] = {'students': student_data}
+
+        context = {
+            'courses': courses,
+            'students_courses': students_courses,
+        }
+        return render(request, 'grades.html', context)
+    
+    # If it's a GET request, initially render the page with the course and student data
+    courses = Course.objects.filter(creator=request.user)
+    students_courses = {}
+
+    for course in courses:
+        associated_students = CourseStudent.objects.filter(course=course)
+        student_data = []
+        for student in associated_students:
+            student_data.append({
+                'student_id': student.student.id,
+                'student_name': student.student.name,
+                'course_id': student.course.id,
+                'grade': student.grade,
+            })
+
+        students_courses[course.name] = {'students': student_data}
+
+    context = {
+        'courses': courses,
+        'students_courses': students_courses,
+    }
+    return render(request, 'grades.html', context)

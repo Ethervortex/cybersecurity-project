@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Arvosanat{% endblock %}
+{% block link %}
+    {% if user.is_authenticated %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <h2>Arvosanat</h2>
+
+    <form method="POST" action="{% url 'opeapp:grades' %}">
+        {% csrf_token %}
+        Valitse kurssi:
+        <div class="selector">
+            <select id="courseSelect" name="course">
+                <option value="" selected disabled>Valitse kurssi</option>
+                {% for course in courses %}
+                    <option value="{{ course }}">{{ course }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <br><br>
+        <h3 id="selectedCourseName"></h3>
+        <table class="student-table" style="display: none;">
+            <thead><tr>
+                <th>Oppilas</th>
+                <th>Anna arvosana</th>
+                <th>Kurssin arvosana</th>
+                <th style="display: none;">Kurssi ID</th>
+            </thead></tr>
+            {% for course_name, course_data in students_courses.items %}
+                    {% for student_data in course_data.students %}
+                        <tr data-course="{{ course_name }}">
+                            <td>{{ student_data.student_name }}</td>
+                            <td class="center-input">
+                                <input
+                                    type="number"
+                                    name="grade-{{ student_data.student_id }}-{{ student_data.course_id }}"
+                                    min="4"
+                                    max="10"
+                                    step="1"
+                                    value="{% if student_data.grade is not none %}{{ student_data.grade }}{% else %}7{% endif %}"
+                                    placeholder="4-10"
+                                />
+                            </td>
+                            <td class="center-input">
+                                {% if student_data.grade is none %}
+                                    -
+                                {% else %}
+                                    {{ student_data.grade }}
+                                {% endif %}
+                            </td>
+                            <td style="display: none;">
+                                <input type="hidden" name="course_id-{{ student_data.student_id }}" value="{{ student_data.course_id }}" />
+                                <input type="hidden" name="student_course-{{ student_data.student_id }}-{{ student_data.course_id }}" value="{{ course_name }}" />
+                            </td>
+                        </tr>
+                    {% endfor %}
+                
+            {% endfor %}
+        </table>
+        <br>
+        <button class="button-style" type="submit" style="display: none;">Tallenna</button>
+    </form>
+
+    <script>
+        const courseSelect = document.getElementById("courseSelect");
+        const selectedCourseName = document.getElementById("selectedCourseName");
+        const table = document.querySelector("table");
+        const submitButton = document.querySelector("button[type='submit']");
+
+        courseSelect.addEventListener("change", () => {
+            // Get selected option
+            const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+            
+            // Update course name element with selected course's name
+            selectedCourseName.textContent = selectedOption.textContent;
+
+            const selectedCourse = selectedOption.textContent;
+            const tableRows = document.querySelectorAll("table tr");
+
+            tableRows.forEach(row => {
+                const dataCourse = row.getAttribute("data-course");
+                if (dataCourse === selectedCourse || dataCourse === null) {
+                    row.style.display = "table-row";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            table.style.display = "table";
+            submitButton.style.display = "block";
+        });
+    </script>
+{% endblock %}
