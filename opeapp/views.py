@@ -1,10 +1,10 @@
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .models import Student
+from django.contrib.auth import get_user_model
 
 @login_required
 def home_view(request):
@@ -19,7 +19,7 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-
+        
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
@@ -36,7 +36,7 @@ def signup_view(request):
         username = request.POST['username']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
-
+        User = get_user_model()
         if password1 != password2:
             messages.error(request, 'Passwords do not match.')
         elif User.objects.filter(username=username).exists():
@@ -54,6 +54,7 @@ def logout_view(request):
     logout(request)
     return render(request, 'login.html')
 
+@login_required
 def students_view(request):
     if request.method == "POST":
         student_name = request.POST.get('student_name')
@@ -64,8 +65,7 @@ def students_view(request):
         if existing_student:
             messages.error(request, "A student with this name already exists.")
         else:
-            creator = User.objects.get(pk=request.user.pk)
-            new_student = Student.objects.create(name=student_name, creator=creator) # Tässä jokin ongelma
+            new_student = Student(name=student_name, creator=request.user) # Ei toimi auth.user kanssa, selvitä
             print('new student: ', new_student)
             new_student.save()
             messages.success(request, f"{student_name} added successfully.")
