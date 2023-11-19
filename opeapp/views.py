@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .models import Student, Course, CourseStudent
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 @login_required
 def home_view(request):
@@ -72,7 +73,14 @@ def students_view(request):
 
     # Fetch all students associated with the current user
     creator_id = request.user.id
-    students = Student.objects.filter(creator=creator_id)
+    search_query = request.GET.get('search_query')
+
+    if search_query:
+        # If there is a search query, filter students based on the query
+        students = Student.objects.filter(Q(name__icontains=search_query) & Q(creator=creator_id))
+    else:
+        # If no search query, get all students for the current user
+        students = Student.objects.filter(creator=creator_id)
 
     context = {
         'students': students

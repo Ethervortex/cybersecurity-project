@@ -11,6 +11,7 @@
 
     <h3>Oppilaan kurssit:</h3>
     {% for course, data in course_students.items %}
-        <h4>{{ course }}, arvosana: {{ data.grade }}</h4>
+        <b>{{ course }}</b>, arvosana: <b>{{ data.grade }}</b>
+        <br>
     {% endfor %}
 {% endblock %}
