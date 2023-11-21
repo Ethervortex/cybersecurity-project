@@ -14,7 +14,7 @@
 
     <div id="new-student-form" style="display: none;">
         <form action="{% url 'opeapp:students' %}" method="POST">
-            {% csrf_token %}
+            {# {% csrf_token %} #}
             <label for="student-name">Nimi:</label>
             <input type="text" id="student-name" name="student_name" required minlength="3" maxlength="25">
             <button class="button-style" type="submit" name="action" value="add_student">Tallenna</button>
@@ -24,7 +24,7 @@
     <br>
     <div id="search-form">
         <form action="{% url 'opeapp:students' %}" method="GET">
-            {% csrf_token %}
+            {# {% csrf_token %} #}
             <input type="text" id="search-query" name="search_query" placeholder="Etsi oppilasta">
             <button class="button-style" type="submit" name="action" value="search">Hae</button>
         </form>

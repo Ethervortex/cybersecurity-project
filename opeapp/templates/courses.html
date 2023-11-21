@@ -14,7 +14,7 @@
 
     <div id="new-course-form" style="display: none;">
         <form action="{% url 'opeapp:courses' %}" method="POST">
-            {% csrf_token %}
+            {# {% csrf_token %} #}
             <label for="course-name">Kurssin nimi:</label>
             <input type="text" id="course-name" name="course_name" required minlength="3" maxlength="20">
             <button class="button-style" type="submit" name="action" value="add_course">Tallenna</button>

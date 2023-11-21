@@ -9,7 +9,7 @@
     <h2>Arvosanat</h2>
 
     <form method="POST" action="{% url 'opeapp:grades' %}">
-        {% csrf_token %}
+        {# {% csrf_token %} #}
         Valitse kurssi:
         <div class="selector">
             <select id="courseSelect" name="course">

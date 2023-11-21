@@ -1,0 +1,12 @@
+LINK: https://github.com/Ethervortex/cybersecurity-project
+Installation instructions:
+- Install Django if not yet installed: python -m pip install Django
+- Clone repository: git clone https://github.com/Ethervortex/cybersecurity-project.git
+- Start development server: python manage.py runserver
+- Application starts at localhost:8000/opeapp
+
+FLAW 1:
+exact source link pinpointing flaw 1...
+The forms in students.html, courses.html and grades.html have Cross-site Request Forgery (CSRF) vulnerability.
+Fix:
+Uncomment lines '{% csrf_token %}' in students, courses and grades templates.
