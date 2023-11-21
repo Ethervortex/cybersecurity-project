@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -6,6 +6,7 @@ from django.contrib.auth import logout
 from .models import Student, Course, CourseStudent
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.db import connection
 
 @login_required
 def home_view(request):
@@ -76,8 +77,11 @@ def students_view(request):
     search_query = request.GET.get('search_query')
 
     if search_query:
-        # If there is a search query, filter students based on the query
-        students = Student.objects.filter(Q(name__icontains=search_query) & Q(creator=creator_id))
+        # students = Student.objects.filter(Q(name__icontains=search_query) & Q(creator=creator_id))
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM opeapp_student WHERE name LIKE '%" + search_query + "%' AND creator_id = " + str(creator_id))
+            students_query = cursor.fetchall()
+            students = [Student(id=student[0], name=student[1], creator_id=student[2]) for student in students_query]
     else:
         # If no search query, get all students for the current user
         students = Student.objects.filter(creator=creator_id)

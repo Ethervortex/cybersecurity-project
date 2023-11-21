@@ -1,3 +1,9 @@
+Cyber Security Base 2023 - Project I
+
+The application 'Opeapp' has CSRF vulnerability and four security vulnerabilities from OWASP Top 20-list 2017.
+Flaws are: CSRF, Injection,
+Flaws and their fixes are described below.
+
 LINK: https://github.com/Ethervortex/cybersecurity-project
 Installation instructions:
 - Install Django if not yet installed: python -m pip install Django
@@ -5,8 +11,18 @@ Installation instructions:
 - Start development server: python manage.py runserver
 - Application starts at localhost:8000/opeapp
 
-FLAW 1:
-exact source link pinpointing flaw 1...
-The forms in students.html, courses.html and grades.html have Cross-site Request Forgery (CSRF) vulnerability.
+FLAW 1 (CSRF):
+https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/students.html
+https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/courses.html
+https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/grades.html
+The forms in students.html, courses.html and grades.html have Cross-site Request Forgery (CSRF) vulnerabilities.
 Fix:
-Uncomment lines '{% csrf_token %}' in students, courses and grades templates.
+Uncomment lines '{% csrf_token %}' in students, courses and grades templates:
+https://github.com/Ethervortex/cybersecurity-project//opeapp/templates/students.html#L17
+https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/students.html#L27
+https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/courses.html#L17
+https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/grades.html#L12
+
+FLAW 2 (SQL Injection):
+
+The student search form in students.html uses raw SQL query where performing SQL injection is possible.
