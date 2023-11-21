@@ -15,8 +15,6 @@ def home_view(request):
 
 def login_view(request):
     context = {}
-    #if request.user.is_authenticated:
-    #    return render(request, 'home.html')
 
     if request.method == 'POST':
         username = request.POST['username']
@@ -61,14 +59,12 @@ def students_view(request):
     if request.method == "POST":
         student_name = request.POST.get('student_name')
         creator_id = request.user.id
-        print('Student name: ', student_name, ' creator id: ', creator_id)
         existing_student = Student.objects.filter(name=student_name, creator=creator_id).exists()
 
         if existing_student:
             messages.error(request, "A student with this name already exists.")
         else:
-            new_student = Student(name=student_name, creator=request.user) # Ei toimi auth.user kanssa, selvitä
-            print('new student: ', new_student)
+            new_student = Student(name=student_name, creator=request.user)
             new_student.save()
             messages.success(request, f"{student_name} added successfully.")
 
@@ -77,11 +73,16 @@ def students_view(request):
     search_query = request.GET.get('search_query')
 
     if search_query:
+        # Safe SQL query, uncomment the following line:
         # students = Student.objects.filter(Q(name__icontains=search_query) & Q(creator=creator_id))
+
+        # Unsafe raw SQL query, comment out the whole with-statement:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM opeapp_student WHERE name LIKE '%" + search_query + "%' AND creator_id = " + str(creator_id))
+            query = "SELECT * FROM opeapp_student WHERE creator_id = " + str(creator_id) + " AND name LIKE '%" + search_query + "%'"
+            cursor.execute(query)
             students_query = cursor.fetchall()
             students = [Student(id=student[0], name=student[1], creator_id=student[2]) for student in students_query]
+
     else:
         # If no search query, get all students for the current user
         students = Student.objects.filter(creator=creator_id)

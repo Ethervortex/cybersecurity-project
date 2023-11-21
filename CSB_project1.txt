@@ -26,3 +26,11 @@ https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/grades.htm
 FLAW 2 (SQL Injection):
 
 The student search form in students.html uses raw SQL query where performing SQL injection is possible.
+User is supposed to be able to access only those students that the user has created, but by using SQL
+injection it is possible to retrieve students added by other creator. This can be done for example by
+doing search:
+' OR creator_id = 1; --
+Now all students created by id=1 are listed and sensitive student
+information (grades) can be viewed.
+Fix:
+Comment out the whole with statement (lines ) and uncomment safe version using the Django ORM to filter the data:
