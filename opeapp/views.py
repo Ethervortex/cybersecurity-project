@@ -1,10 +1,8 @@
 from django.shortcuts import render
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
 from .models import Student, Course, CourseStudent
-from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.db import connection
 
@@ -124,7 +122,7 @@ def courses_view(request):
 def add_course_students(request, course_id):
     if request.method == 'POST':
         student_ids = request.POST.getlist('student_ids')
-        course = Course.objects.get(pk=course_id)
+        course = Course.objects.get(pk=course_id, creator_id=request.user)
 
         CourseStudent.objects.filter(course=course).delete()
         print('Student_ids: ', student_ids)
@@ -137,8 +135,8 @@ def add_course_students(request, course_id):
         courses = Course.objects.filter(creator=request.user.id)
         return render(request, 'courses.html', {'courses': courses})
 
-    course = Course.objects.get(pk=course_id)
-    students = Student.objects.all()
+    course = Course.objects.get(pk=course_id, creator_id=request.user)
+    students = Student.objects.filter(creator_id=request.user)
     course_students = CourseStudent.objects.filter(course=course)
     associated_student_ids = [cs.student.id for cs in course_students]
     print('Associated student ids: ', associated_student_ids, course_students, course)
@@ -215,8 +213,15 @@ def grades_view(request):
 
 @login_required
 def student_details(request, student_id):
-    student = Student.objects.get(pk=student_id)
+    try:
+        # Allow only users who have created this student:
+        #student = Student.objects.get(pk=student_id, creator=request.user)
 
+        # Broken Access Control - other users can view details by modifying URL in the browser:
+        student = Student.objects.get(pk=student_id)
+    except:
+        messages.error(request, "You do not have permission to view this student's details.")
+        return render(request, 'students.html')
     course_students = CourseStudent.objects.filter(student=student)
     student_courses = {}
 
