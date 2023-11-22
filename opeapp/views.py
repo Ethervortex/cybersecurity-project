@@ -48,8 +48,9 @@ def signup_view(request):
 
     return render(request, 'signup.html', context)
 
+@login_required
 def logout_view(request):
-    logout(request)
+    #logout(request)
     return render(request, 'login.html')
 
 @login_required
