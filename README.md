@@ -7,7 +7,8 @@ LINK: https://github.com/Ethervortex/cybersecurity-project
 
 The application has two users for testing:
 * gollum:precious1
-* frodo:precious2  
+* frodo:precious2
+
 It is also possible to register new accounts.
 
 Installation instructions:
