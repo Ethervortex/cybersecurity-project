@@ -6,6 +6,22 @@ from .models import Student, Course, CourseStudent
 from django.db.models import Q
 from django.db import connection
 
+# Creating unsafe superuser within views. Comment out the function and its call:
+def create_superuser():
+    User = get_user_model()
+    username = 'admin'
+    email = 'admin@example.com'
+    password = '1234'
+
+    if not User.objects.filter(username=username).exists():
+        user = User.objects.create_superuser(username, email, password)
+        print(f"Superuser '{username}' created successfully.")
+    else:
+        print(f"Superuser '{username}' already exists.")
+
+create_superuser()
+
+
 @login_required
 def home_view(request):
     context = {}
