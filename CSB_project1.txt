@@ -1,9 +1,20 @@
 Cyber Security Base 2023 - Project I
 
-The application 'Opeapp' has CSRF vulnerability and four security vulnerabilities from OWASP Top 10-list 2021.
-Flaws are: CSRF, Injection, Broken Access Control, Identification and Authentication Failures and Security Misconfiguration
+The application 'Opeapp' is meant to assist teachers for adding students to different courses and then give them grades.
+The registered user should have visibility limited only to the students and courses they have created. The provided grades
+are regarded as sensitive information, and unauthorized users should not have access to view them.
+The app was originally developed at University of Helsinki course: Tietokannat ja Web-ohjelmointi, but it
+was modified for the course Cyber Security Base Project 1 to contain different security vulnerabilities and their fixes.
+The application has CSRF vulnerabilities and four security vulnerabilities from OWASP Top 10 list from the year 2021.
 
-The application has two users for testing:
+Security flaws are:
+- Cross-site Request Forgery (CSRF)
+- Injection
+- Broken Access Control
+- Identification and Authentication Failures
+- Security Misconfiguration
+
+The application has two users for testing (username:password):
 gollum:precious1
 frodo:precious2
 It is also possible to register new accounts.
@@ -19,40 +30,47 @@ FLAW 1 (CSRF):
 https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/students.html
 https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/courses.html
 https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/grades.html
-Forms in students.html, courses.html and grades.html have Cross-site Request Forgery (CSRF) vulnerabilities.
+In the provided files, there is a security vulnerability related to Cross-Site Request Forgery (CSRF)
+in the templates for students, courses and grades. CSRF is an attack where a malicious website can perform actions
+on behalf of a user without their consent. The issue lies in the absence of CSRF tokens in the forms of the mentioned
+templates, making them susceptible to CSRF attacks. A CSRF token is a security measure that ensures the form submission
+is coming from the intended and authenticated user.
 Fix:
-Uncomment lines with {% csrf_token %} in students, courses and grades templates:
+The fix involves adding CSRF tokens to the forms in the students.html, courses.html and grades.html templates.
+Specifically, you need to uncomment lines containing {% csrf_token %} at the specified locations in these templates:
 https://github.com/Ethervortex/cybersecurity-project//opeapp/templates/students.html#L17
 https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/students.html#L27
 https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/courses.html#L17
 https://github.com/Ethervortex/cybersecurity-project/opeapp/templates/grades.html#L12
-Also uncomment CsrfViewMiddleware in settings.py:
+Additionally, uncomment the CsrfViewMiddleware in the settings.py file. This middleware is essential for
+processing and validating CSRF tokens in the Django application.
 https://github.com/Ethervortex/cybersecurity-project/cs_proj/settings.py#L47
 
 FLAW 2 (Injection):
 https://github.com/Ethervortex/cybersecurity-project/opeapp/views.py#L95
-The student search in Students (i.e. Oppilaat) page uses raw SQL query where performing SQL injection is possible.
-User is supposed to be able to access only those students that the user has created, but by using SQL
-injection it is possible to retrieve students added by other creator. This can be done for example by
-doing search:
+The security flaw involves the use of raw SQL queries in the student search functionality (in Students i.e. Oppilaat page),
+making the application vulnerable to SQL injection. The user is supposed to be able to access only those students that the user has created, but by using SQL
+injection it is possible for example to retrieve students added by other creator. This can be done by doing search:
 ' OR creator_id = 1; --
 Now all students created by id=1 are listed and sensitive student information (i.e. grades) can be viewed.
 Fix:
-Comment out the whole with-section (lines 95-99 in views.py) and uncomment safe version which uses the Django ORM
-(Object-Relational Mapping) to filter the data:
+The fix involves replacing the vulnerable raw SQL query with a safer Django ORM (Object-Relational Mapping) approach.
+Comment out the whole 'with' section (lines 95-99 in views.py) to disable the raw SQL query.
+https://github.com/Ethervortex/cybersecurity-project/opeapp/views.py#L95
+Then uncomment safer version which uses the Django ORM to filter the data:
 https://github.com/Ethervortex/cybersecurity-project/opeapp/views.py#L92
 
 FLAW 3 (Broken Access Control):
 https://github.com/Ethervortex/cybersecurity-project/opeapp/views.py#L238
-The registered user is supposed to be able to access only the details of students the user has created. However,
-the application has Broken Access Control in student_details-view. As a consequence, the user can access any
-student stored in the database by modifying URL in the browser. The last number is student_id which can be changed and
-details can be accessed:
+The application is intended to allow the registered users access only to the details of students they have created. However,
+the application has broken access control vulnerability in 'student_details' view. As a consequence, the user can access any
+student stored in the database by modifying the URL in the browser. The last number in the URL is student_id which can be changed and
+details of other students can be accessed. Example URL manipulation to access student_id=1:
 http://localhost:8000/opeapp/student/1/
 Fix:
-Comment-out broken access to student details in views.py:
+Comment out the section of code that allows access to student details without proper access control in views.py at line 238:
 https://github.com/Ethervortex/cybersecurity-project/opeapp/views.py#L238
-Uncomment fix where query ensures that the student is retrieved only if the current user is the creator of that student:
+Uncomment the line 235 in views.py where query ensures that the student is retrieved only if the current user is the creator of that student:
 https://github.com/Ethervortex/cybersecurity-project/opeapp/views.py#L235
 
 FLAW 4 (Identification and Authentication Failures):
@@ -63,15 +81,23 @@ The second security concern is the absence of a defined session timeout in the a
 a user accessing the application from a public computer simply closes the browser and departs. Subsequently, an attacker
 gains access to the same browser an hour later, finding the user still authenticated.
 Fix:
-Uncomment the line 'logout(request)' in views.py:
+Uncomment the line 'logout(request)' in views.py. This ensures that the logout operation effectively terminates the session:
 https://github.com/Ethervortex/cybersecurity-project/opeapp/views.py#L69
-Uncomment the lines 127-129 in settings.py file that specify session timeouts:
+Uncomment the lines 127-129 in settings.py file that specify session timeouts. This defines a time limit for the session, enhancing security.
 https://github.com/Ethervortex/cybersecurity-project/cs_proj/settings.py#L127
 
 FLAW 5 (Security Misconfiguration):
 https://github.com/Ethervortex/cybersecurity-project/opeapp/views.py#L10
-A superuser with insecure credentials (admin:1234) is generated programmatically in the code.
+At lines 10-22 in views.py, there is code responsible for creating a superuser with the username "admin" and the password "1234".
+Using such insecure credentials poses a serious security risk, as it provides a potential entry point for unauthorized access.
 Fix:
-First, remove code which generates superuser (lines 10-22 in views.py):
+To address this security misconfiguration, follow these steps:
+- Remove the code block responsible for generating the superuser i.e. delete lines 10-22 in views.py:
 https://github.com/Ethervortex/cybersecurity-project/opeapp/views.py#L10
-Then run the development server, login to the admin interface and delete the superuser which has insecure credentials.
+- After removing the code, run the development server.
+- Access the Django admin interface (typically at http://localhost:8000/admin).
+- Log in using your superuser credentials.
+- Navigate to the "Authentication and Authorization" section and select "Users."
+- Locate the superuser with the username "admin" and delete it.
+By removing the insecure superuser creation code and manually deleting the superuser with insecure credentials, the security
+misconfiguration is eliminated. Always ensure that superusers have strong and secure credentials to prevent unauthorized access.
